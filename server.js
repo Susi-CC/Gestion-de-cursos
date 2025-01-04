@@ -1,62 +1,78 @@
 import express from 'express';
-import { index, User, Bootcamp } from './app/models/index.js';
-import { findUserById } from './app/controllers/user.controller.js';
+import db from './app/config/db.config.js'; // Configuración de la base de datos
+import { 
+    createUser, 
+    findUserById, 
+    findAll, 
+    updateUserById, 
+    deleteUserById 
+} from './app/controllers/user.controller.js'; // Controlador del usuario
 
 const app = express();
-const PORT = 3000;
+app.use(express.json()); // Middleware para parsear JSON
 
-// Middleware para parsear JSON
-app.use(express.json());
+const PORT = process.env.PORT || 3000;
 
-// Inicializar la base de datos y relaciones
-const initializeDatabase = async () => {
+// Probar la conexión a la base de datos
+db.authenticate()
+    .then(() => console.log('Conexión a la base de datos exitosa.'))
+    .catch((error) => console.error('Error al conectar a la base de datos:', error));
+
+// Rutas del servidor
+
+// Crear un nuevo usuario
+app.post('/users', async (req, res) => {
     try {
-        await index();
-
-        // Crear usuarios
-        const user1 = await User.create({ firstName: 'Mateo', lastName: 'Díaz', email: 'mateo.diaz@correo.com' });
-        const user2 = await User.create({ firstName: 'Santiago', lastName: 'Mejías', email: 'santiago.mejias@correo.com' });
-        const user3 = await User.create({ firstName: 'Lucas', lastName: 'Rojas', email: 'lucas.rojas@correo.com' });
-
-        console.log(`Usuarios creados: ${user1.id}, ${user2.id}, ${user3.id}`);
-
-        // Crear bootcamps
-        const bootcamp1 = await Bootcamp.create({ title: 'React Bootcamp', cue: 10, description: 'Aprende React.js' });
-        const bootcamp2 = await Bootcamp.create({ title: 'Web Development', cue: 8, description: 'Desarrollo Full Stack' });
-
-        console.log(`Bootcamps creados: ${bootcamp1.id}, ${bootcamp2.id}`);
-
-        // Asociar usuarios a bootcamps
-        await bootcamp1.addUser(user1);
-        await bootcamp1.addUser(user2);
-        await bootcamp2.addUser(user3);
-
-        console.log('Usuarios asociados a los bootcamps.');
+        const { firstName, lastName, email } = req.body;
+        const nuevoUsuario = await createUser(firstName, lastName, email);
+        res.status(201).json(nuevoUsuario);
     } catch (error) {
-        console.error('Error al inicializar datos:', error);
-    }
-};
-
-// Cambiar la ruta para que sea compatible con /users/:id/bootcamps
-app.get('/users/:id/bootcamps', async (req, res) => {
-    try {
-        const userId = req.params.id;
-        const userWithBootcamps = await findUserById(userId);
-
-        if (!userWithBootcamps) {
-            return res.status(404).json({ error: `Usuario con id=${userId} no encontrado` });
-        }
-
-        res.status(200).json(userWithBootcamps);
-    } catch (error) {
-        console.error(`Error al buscar el usuario con id=${req.params.id}:`, error.message);
-        res.status(500).json({ error: error.message });
+        res.status(400).json({ error: error.message });
     }
 });
 
+// Obtener todos los usuarios con sus bootcamps
+app.get('/users', async (req, res) => {
+    try {
+        const usuarios = await findAll();
+        res.status(200).json(usuarios);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+// Obtener un usuario por ID con sus bootcamps
+app.get('/users/:id', async (req, res) => {
+    try {
+        const usuario = await findUserById(req.params.id);
+        res.status(200).json(usuario);
+    } catch (error) {
+        res.status(404).json({ error: error.message });
+    }
+});
+
+// Actualizar un usuario por ID
+app.put('/users/:id', async (req, res) => {
+    try {
+        const { firstName, lastName, email } = req.body;
+        const usuarioActualizado = await updateUserById(req.params.id, firstName, lastName, email);
+        res.status(200).json(usuarioActualizado);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+// Eliminar un usuario por ID
+app.delete('/users/:id', async (req, res) => {
+    try {
+        const usuarioEliminado = await deleteUserById(req.params.id);
+        res.status(200).json(usuarioEliminado);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
 
 // Iniciar el servidor
-app.listen(PORT, async () => {
-    console.log(`Servidor corriendo en http://localhost:${PORT}`);
-    await initializeDatabase(); // Crear datos iniciales
+app.listen(PORT, () => {
+    console.log(`Servidor ejecutándose en http://localhost:${PORT}`);
 });

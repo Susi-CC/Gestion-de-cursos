@@ -24,12 +24,11 @@ export const createUser = async (nombre, apellido, correo) => {
 
 export const findUserById = async (id) => {
     try {
-        // Buscar usuario por ID y obtener solo los datos específicos
         const usuario = await User.findByPk(id, {
-            attributes: ['id', 'firstName', 'lastName'], // Atributos del usuario
+            attributes: ['id', 'firstName', 'lastName'],
             include: {
                 model: Bootcamp,
-                attributes: ['id', 'title', 'cue', 'description'], // Atributos del bootcamp
+                attributes: ['id', 'title', 'cue', 'description'],
             },
         });
 
@@ -37,7 +36,6 @@ export const findUserById = async (id) => {
             throw new Error(`Usuario con id=${id} no encontrado`);
         }
 
-        // Formatear la respuesta para incluir solo los datos requeridos
         const resultado = {
             userId: usuario.id,
             firstName: usuario.firstName,
@@ -60,10 +58,10 @@ export const findUserById = async (id) => {
 export const findAll = async () => {
     try {
         const encusuarios = await User.findAll({
-            attributes: ['id', 'firstName', 'lastName'], // Atributos del usuario
+            attributes: ['id', 'firstName', 'lastName'],
             include: {
                 model: Bootcamp,
-                attributes: ['id', 'title', 'cue', 'description'], // Atributos del bootcamp
+                attributes: ['id', 'title', 'cue', 'description'],
             },
         });
         const resultado = usuarios.map((usuario) => ({
@@ -84,40 +82,58 @@ export const findAll = async () => {
         throw error;
     }
 };
-//Función para modificar las marcas
-export const modificarMarca = async (id, marca) => {
-    try {
-        const marcaActualizar = await Marca.update(
-            {
-                nombre: marca
-            },
-            {
-                where: {
-                    id: id
-                },
-                returning: true,
-                plain: true
-            }
-        )
-        return marcaActualizar;
-    } catch (error) {
-        console.error(`Ha ocurrido un error: ${error}`);
-    }
-}
 
-//Eliminar marca
-export const eliminarMarca = async (id) => {
+export const updateUserById = async (id, nombre, apellido, correo) => {
     try {
-        const marcaEliminada = await detalleMarca(id);
-        const marcaAEliminar = await Marca.destroy({
+        const camposAActualizar = {};
+        if (nombre) camposAActualizar.firstName = nombre;
+        if (apellido) camposAActualizar.lastName = apellido;
+        if (correo) camposAActualizar.email = correo;
+
+        if (Object.keys(camposAActualizar).length === 0) {
+            throw new Error('No se proporcionaron campos para actualizar.');
+        }
+
+        const [affectedRows] = await User.update(
+            camposAActualizar, 
+            {
+                where: { id: id },
+            }
+        );
+
+        if (affectedRows === 0) {
+            throw new Error(`Usuario con id=${id} no encontrado.`);
+        }
+
+        const usuarioActualizar = await User.findByPk(id, {
+            attributes: ['id', 'firstName', 'lastName', 'email']
+        });
+
+        return usuarioActualizar; 
+    } catch (error) {
+        console.error(`Ha ocurrido un error en updateUserById: ${error.message}`);
+        throw error;
+    }
+};
+
+
+export const deleteUserById = async (id) => {
+    try {
+        const usuarioEliminado = await User.findByPk(id, {
+            attributes: ['id', 'firstName', 'lastName']
+        }
+        );
+
+        await User.destroy({
             where: {
                 id: id
             },
             returning: true,
             plain: true
         })
-        return marcaEliminada;
+        return usuarioEliminado;
     } catch (error) {
-        console.error(`Ha ocurrido un error: ${error}`);
+        console.error(`Ha ocurrido un error en deleteUserById: ${error}`);
+        throw error;
     }
 }
