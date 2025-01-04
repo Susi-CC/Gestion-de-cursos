@@ -1,8 +1,16 @@
+import express from 'express';
 import { index, User, Bootcamp } from './app/models/index.js';
+import { findUserById } from './app/controllers/user.controller.js';
 
-const seedData = async () => {
+const app = express();
+const PORT = 3000;
+
+// Middleware para parsear JSON
+app.use(express.json());
+
+// Inicializar la base de datos y relaciones
+const initializeDatabase = async () => {
     try {
-        // Inicializar modelos y relaciones
         await index();
 
         // Crear usuarios
@@ -29,5 +37,26 @@ const seedData = async () => {
     }
 };
 
-// Ejecutar la función para inicializar datos
-seedData();
+// Cambiar la ruta para que sea compatible con /users/:id/bootcamps
+app.get('/users/:id/bootcamps', async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const userWithBootcamps = await findUserById(userId);
+
+        if (!userWithBootcamps) {
+            return res.status(404).json({ error: `Usuario con id=${userId} no encontrado` });
+        }
+
+        res.status(200).json(userWithBootcamps);
+    } catch (error) {
+        console.error(`Error al buscar el usuario con id=${req.params.id}:`, error.message);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
+// Iniciar el servidor
+app.listen(PORT, async () => {
+    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+    await initializeDatabase(); // Crear datos iniciales
+});
