@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import db from './app/config/db.config.js'; // Configuración de la base de datos
 import { index, User, Bootcamp } from './app/models/index.js';
 import { createUser, findUserById, findAll, updateUserById, deleteUserById } from './app/controllers/user.controller.js';
+import { createBootcamp, addUser, findById, findAllBootcamps } from './app/controllers/bootcamp.controller.js';
 
 // Configurar dotenv para variables de entorno
 dotenv.config();
@@ -23,19 +24,25 @@ const seedData = async () => {
         console.log(`Usuarios creados: ${user1.id}, ${user2.id}, ${user3.id}`);
 
         // Crear bootcamps
-        const bootcamp1 = await Bootcamp.create({ title: 'React Bootcamp', cue: 10, description: 'Aprende React.js' });
-        const bootcamp2 = await Bootcamp.create({ title: 'Web Development', cue: 8, description: 'Desarrollo Full Stack' });
+        const bootcamp1 = await createBootcamp('React Bootcamp', 10, 'Aprende React.js');
+        const bootcamp2 = await createBootcamp('Web Development', 8, 'Desarrollo Full Stack');
 
         console.log(`Bootcamps creados: ${bootcamp1.id}, ${bootcamp2.id}`);
 
         // Asociar usuarios a bootcamps
-        await bootcamp1.addUser(user1);
-        await bootcamp1.addUser(user2);
-        await bootcamp2.addUser(user3);
+        await addUser(user1.id, bootcamp1.id);
+        await addUser(user2.id, bootcamp1.id);
+        await addUser(user3.id, bootcamp2.id);
 
         console.log('Usuarios asociados a los bootcamps.');
 
         // Probar funciones adicionales
+        const bootcampById = await findById(bootcamp1.id);
+        console.log('Bootcamp encontrado por ID:', bootcampById);
+
+        const allBootcamps = await findAllBootcamps();
+        console.log('Todos los bootcamps:', allBootcamps);
+
         const userById = await findUserById(user1.id);
         console.log('Usuario encontrado por ID:', userById);
 
