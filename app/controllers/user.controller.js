@@ -14,6 +14,7 @@ export const createUser = async (nombre, apellido, correo) => {
             { transaction: transaccion }
         )
         await transaccion.commit();
+        console.log('Usuario creado:', nuevoUsuario.dataValues);
         return nuevoUsuario;
     } catch (error) {
         console.error(`Ha ocurrido un error: ${error}`);
@@ -47,7 +48,7 @@ export const findUserById = async (id) => {
                 description: bootcamp.description,
             })),
         };
-
+        console.log('Usuario encontrado:', resultado);
         return resultado;
     } catch (error) {
         console.error(`Ha ocurrido un error en findUserById: ${error.message}`);
@@ -75,7 +76,7 @@ export const findAll = async () => {
                 description: bootcamp.description,
             })),
         }));
-
+        console.log('Todos los usuarios:', resultado);
         return resultado;
     } catch (error) {
         console.error(`Ha ocurrido un error en findAll: ${error}`);
@@ -84,7 +85,12 @@ export const findAll = async () => {
 };
 
 export const updateUserById = async (id, nombre, apellido, correo) => {
+
     try {
+        const usuarioOriginal = await User.findByPk(id, {
+            attributes: ['id', 'firstName', 'lastName', 'email']
+        });
+        console.log('Usuario original:', usuarioOriginal.dataValues);
         const camposAActualizar = {};
         if (nombre) camposAActualizar.firstName = nombre;
         if (apellido) camposAActualizar.lastName = apellido;
@@ -108,7 +114,7 @@ export const updateUserById = async (id, nombre, apellido, correo) => {
         const usuarioActualizar = await User.findByPk(id, {
             attributes: ['id', 'firstName', 'lastName', 'email']
         });
-
+        console.log('Usuario actualizado:', usuarioActualizar.dataValues);
         return usuarioActualizar; 
     } catch (error) {
         console.error(`Ha ocurrido un error en updateUserById: ${error.message}`);
@@ -131,6 +137,7 @@ export const deleteUserById = async (id) => {
             returning: true,
             plain: true
         })
+        console.log('Usuario eliminado:', usuarioEliminado.dataValues);
         return usuarioEliminado;
     } catch (error) {
         console.error(`Ha ocurrido un error en deleteUserById: ${error}`);

@@ -14,6 +14,7 @@ export const createBootcamp = async (titulo, Cue, descripcion) => {
             { transaction: transaccion }
         )
         await transaccion.commit();
+        console.log('Bootcamp creado:', nuevoBootcamp.dataValues);
         return nuevoBootcamp;
     } catch (error) {
         console.error(`Ha ocurrido un error: ${error}`);
@@ -73,7 +74,7 @@ export const findById = async (bootcampId) => {
                 email: usuario.email,
             })),
         };
-
+        console.log('Bootcamp encontrado:', resultado);
         return resultado;
     } catch (error) {
         console.error(`Ha ocurrido un error en findBootcampById: ${error.message}`);
@@ -102,7 +103,7 @@ export const findAllBootcamps = async () => {
                 email: usuario.email,
             })),
         }));
-
+        console.log('Todos los bootcamps:', resultado);
         return resultado;
     } catch (error) {
         console.error(`Ha ocurrido un error en findAllBootcamps: ${error.message}`);

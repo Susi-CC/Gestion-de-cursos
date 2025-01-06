@@ -18,7 +18,7 @@ const Bootcamp = db.define('Bootcamp', {
         allowNull: false,
         validate: {
             min: 5,
-            max: 10,
+            max: 20,
         },
     },
     description: {
