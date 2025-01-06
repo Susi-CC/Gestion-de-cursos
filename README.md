@@ -1,4 +1,5 @@
-# Gestión de Cursos
+# Practica de consolidación del módulo 7 "Acceso a datos en aplicaciones NODE"
+## Curso FullStack JavaScript
 
 Este proyecto implementa un sistema de gestión de cursos Bootcamp con funcionalidades CRUD para usuarios y cursos, desarrollado con Node.js y Sequelize.
 
