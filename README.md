@@ -111,31 +111,6 @@ El servidor estará disponible en `http://localhost:3000` por defecto.
 - Sequelize
 - PostgreSQL
 
-## Contribuciones
-
-Si deseas contribuir a este proyecto, sigue estos pasos:
-
-1. Haz un fork del repositorio.
-2. Crea una nueva rama:
-
-   ```bash
-   git checkout -b feature/nueva-funcionalidad
-   ```
-
-3. Realiza tus cambios y haz un commit:
-
-   ```bash
-   git commit -m "Agrega nueva funcionalidad"
-   ```
-
-4. Sube tus cambios a tu repositorio:
-
-   ```bash
-   git push origin feature/nueva-funcionalidad
-   ```
-
-5. Abre un Pull Request en este repositorio.
-
 ## Licencia
 
 Este proyecto está bajo la Licencia ISC. Consulta el archivo `LICENSE` para más detalles.
