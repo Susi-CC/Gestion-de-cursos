@@ -126,7 +126,7 @@ export const updateUserById = async (id, nombre, apellido, correo) => {
 export const deleteUserById = async (id) => {
     try {
         const usuarioEliminado = await User.findByPk(id, {
-            attributes: ['id', 'firstName', 'lastName']
+            attributes: ['id', 'firstName', 'lastName', 'email']
         }
         );
 
