@@ -57,7 +57,7 @@ export const findUserById = async (id) => {
 
 export const findAll = async () => {
     try {
-        const encusuarios = await User.findAll({
+        const usuarios = await User.findAll({
             attributes: ['id', 'firstName', 'lastName'],
             include: {
                 model: Bootcamp,
