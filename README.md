@@ -116,6 +116,3 @@ El servidor estará disponible en `http://localhost:3000` por defecto.
 
 Este proyecto está bajo la Licencia ISC. Consulta el archivo `LICENSE` para más detalles.
 
----
-
-¡Gracias por contribuir al desarrollo de este proyecto! 🎉
